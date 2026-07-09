@@ -114,3 +114,28 @@ if __name__ == "__main__":
         )
         
         print("✅ Training Complete.")
+
+# Log model seperately to have more flexibility on setup
+        
+        signature = infer_signature(X_train, predictions)
+        input_example = X_train.head(5)
+        registered_model_name="california_housing"
+        
+        model_info = mlflow.sklearn.log_model(
+            sk_model=model,
+            name="model",
+            registered_model_name=registered_model_name,
+            signature=signature,
+            input_example=input_example,
+        )
+
+        alias_name = "challenger"
+        
+        model_version = model_info.registered_model_version
+        print(f"[INFO] Model logged as version {model_version}")
+
+        client.set_registered_model_alias(
+            name=registered_model_name,
+            alias=alias_name,
+            version=model_version,
+        )
